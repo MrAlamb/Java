@@ -68,8 +68,8 @@ public class GraphicsDisplay extends JPanel {
         Font areaFont = new Font("Serif", Font.BOLD, 16);
         labelsFont = new Font("Serif", 0, 10);
         GraphicsDisplay.formatter.setMaximumFractionDigits(5);
-        addMouseListener(new MouseHandler());
-        addMouseMotionListener(new MouseMotionHandler());
+     //   addMouseListener(new MouseHandler());
+     //   addMouseMotionListener(new MouseMotionHandler());
     }
 
     public void displayGraphics(Double[][] GraphicsData, Double[][] OriginalData) {
@@ -394,7 +394,14 @@ public class GraphicsDisplay extends JPanel {
     static void SetScaleMode(GraphicsDisplay graphicsDisplay, boolean scaleMode) {
         graphicsDisplay.scaleMode = scaleMode;
     }
-    public class MouseHandler extends MouseAdapter implements MouseListener {
+
+
+
+
+
+
+
+   /* public class MouseHandler extends MouseAdapter implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent ev) {//клик
             if (ev.getButton() == 3) {
@@ -493,5 +500,6 @@ public class GraphicsDisplay extends JPanel {
         }
 
 
-    }
+    }*/
+
 }
