@@ -1,4 +1,4 @@
-package bsu.rfct.course2.group9.Todadze;
+package bsu.rfe.java.group8.lab4.Ambrazhei.varA1;
 
 import javax.swing.*;
 import java.io.*;

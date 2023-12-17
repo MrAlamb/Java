@@ -1,4 +1,4 @@
-package bsu.rfct.course2.group9.Todadze;
+package bsu.rfe.java.group8.lab4.Ambrazhei.varA1;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,8 +54,9 @@ public class GraphicsDisplay extends JPanel {
         originalPoint = new double[2];
         selectionRect = new Rectangle2D.Double();
         setBackground(Color.WHITE);
+//        задаем пунктирную линию с значениями длина штриха, длина пробела
         BasicStroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.CAP_BUTT,
-                1, new float[]{9, 3, 3, 3, 3, 3, 3, 3, 9, 3, 3, 3, 9}, 0);
+                1, new float[]{27,3, 3, 3, 3, 3, 9, 3, 9}, 0);
         graphicsStroke = dashed;
         axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
@@ -106,19 +107,17 @@ public class GraphicsDisplay extends JPanel {
         super.paintComponent(g);
 
         double scaleX = getSize().getWidth() / (viewport[1][0] - viewport[0][0]);
-        ;
         double scaleY = getSize().getHeight() / (viewport[0][1] - viewport[1][1]);
 
         scale = Math.min(scaleX, scaleY);
         if (scale == scaleX) {
-            double yIncrement = (getSize().getHeight() / scale - (maxY -
-                    minY)) / 2;
+            double yIncrement = (getSize().getHeight() / scale - (maxY - minY)) / 2;
             maxY += yIncrement;
             minY -= yIncrement;
         }
+        
         if (scale == scaleY) {
-            double xIncrement = (getSize().getWidth() / scale - (maxX -
-                    minX)) / 2;
+            double xIncrement = (getSize().getWidth() / scale - (maxX - minX)) / 2;
             maxX += xIncrement;
             minX -= xIncrement;
         }
@@ -142,7 +141,6 @@ public class GraphicsDisplay extends JPanel {
         canvas.setStroke(oldStroke);
         paintLabels(canvas);
         paintSelection(canvas);
-
     }
 
     private void paintSelection(Graphics2D canvas) {
@@ -181,9 +179,9 @@ public class GraphicsDisplay extends JPanel {
     protected void paintMarkers(Graphics2D canvas) {
         canvas.setStroke(markerStroke);
         canvas.setStroke(new BasicStroke(1));
-        canvas.setPaint(Color.BLACK);
         Ellipse2D.Double lastMarker = null;
         int i_n = -1;
+
         for (Double[] point : graphicsData) {
             ++i_n;
             if (point[0] >= viewport[0][0] && point[1] <= viewport[0][1] && point[0] <= viewport[1][0]) {
@@ -192,21 +190,18 @@ public class GraphicsDisplay extends JPanel {
                 }
                 Point2D.Double center = xyToPoint(point[0], point[1]);
                 Point2D.Double corner = shiftPoint(center, 7, 7);
-                boolean even = true;
 
-                int num = Math.abs(point[1].intValue());
-                while (num != 0) {
-                    if (num % 10 % 2 == 1) {
-                        even = false;
-                        break;
-                    }
-                    num /= 10;
-                }
-                canvas.setColor(Color.BLACK);
+                double num = point[1]; // Значение функции в точке
 
-                if (even) {
+                // Проверка, что целая часть значения функции является квадратом целого числа
+                if (isSquare((int) num)) {
+                    // Целая часть значения функции является квадратом целого числа
+                    // Изменение цвета маркера на синий
                     canvas.setColor(Color.GREEN);
+                } else {
+                    canvas.setColor(Color.BLACK);
                 }
+
 
                 Ellipse2D.Double marker = new Ellipse2D.Double();
                 marker.setFrameFromCenter(center, corner);
@@ -214,9 +209,13 @@ public class GraphicsDisplay extends JPanel {
                 if (i_n == this.selectedMarker) {
                     lastMarker = marker;
                 } else {
-                    canvas.drawOval((int) (center.x - 5.5), (int) (center.y - 5.5), 11, 11);
+                	canvas.drawOval((int) (center.x), (int) (center.y), 1, 1);
                     canvas.drawLine((int) (center.x - 5.5), (int) (center.y), (int) (center.x + 5.5), (int) (center.y));
-                    canvas.drawLine((int) (center.x), (int) (center.y - 5.5), (int) (center.x), (int) (center.y + 5.5));
+                    canvas.drawLine((int) (center.x - 1), (int) (center.y - 5.5), (int) (center.x + 1), (int) (center.y - 5.5));
+                    canvas.drawLine((int) (center.x - 1), (int) (center.y + 5.5), (int) (center.x + 1), (int) (center.y + 5.5));
+                    canvas.drawLine((int) (center.x - 5.5), (int) (center.y - 1), (int) (center.x -5.5), (int) (center.y + 1));
+                    canvas.drawLine((int) (center.x +5.5), (int) (center.y - 1), (int) (center.x + 5.5), (int) (center.y + 1));
+                    canvas.drawLine((int) (center.x), (int) (center.y+5.5), (int) (center.x), (int) (center.y-5.5));
                 }
             }
         }
@@ -228,6 +227,12 @@ public class GraphicsDisplay extends JPanel {
         }
         canvas.setStroke(markerStroke);
     }
+
+ // Проверка, что число является квадратом целого числа
+ private boolean isSquare(int num) {
+     int sqrt = (int) Math.sqrt(num);
+     return sqrt * sqrt == num;
+ }
 
     private void paintLabels(final Graphics2D canvas) {
         canvas.setColor(Color.BLACK);
@@ -255,7 +260,11 @@ public class GraphicsDisplay extends JPanel {
 
             canvas.draw(new Line2D.Double(xyToPoint(0, maxY),
                     xyToPoint(0, minY)));
-
+          String originLabel = "0";
+          Rectangle2D originBounds = axisFont.getStringBounds(originLabel, context);
+          Point2D.Double originLabelPos = xyToPoint(0, 0);
+          canvas.drawString(originLabel, (float) (originLabelPos.getX() + originBounds.getWidth()),
+                  (float) (originLabelPos.getY() + originBounds.getY()) + 40);
 
             GeneralPath arrow = new GeneralPath();
             Point2D.Double lineEnd = xyToPoint(0, maxY);
@@ -385,10 +394,9 @@ public class GraphicsDisplay extends JPanel {
     static void SetScaleMode(GraphicsDisplay graphicsDisplay, boolean scaleMode) {
         graphicsDisplay.scaleMode = scaleMode;
     }
-
     public class MouseHandler extends MouseAdapter implements MouseListener {
         @Override
-        public void mouseClicked(MouseEvent ev) {
+        public void mouseClicked(MouseEvent ev) {//клик
             if (ev.getButton() == 3) {
                 if (GraphicsDisplay.this.undoHistory.size() > 0) {
                     GraphicsDisplay.SetViewPort(GraphicsDisplay.this,
@@ -403,7 +411,7 @@ public class GraphicsDisplay extends JPanel {
         }
 
         @Override
-        public void mousePressed(MouseEvent ev) {
+        public void mousePressed(MouseEvent ev) {//нажатие
             if (ev.getButton() != 1) {
                 return;
             }
@@ -422,7 +430,7 @@ public class GraphicsDisplay extends JPanel {
         }
 
         @Override
-        public void mouseReleased(MouseEvent ev) {
+        public void mouseReleased(MouseEvent ev) {//отпускание
             if (ev.getButton() != 1) {
                 return;
             }
@@ -443,7 +451,7 @@ public class GraphicsDisplay extends JPanel {
 
     public class MouseMotionHandler implements MouseMotionListener {
         @Override
-        public void mouseMoved(MouseEvent ev) {
+        public void mouseMoved(MouseEvent ev) {// перемещение
             GraphicsDisplay.SetSelectionMarker(GraphicsDisplay.this,
                     GraphicsDisplay.this.findSelectedPoint(ev.getX(), ev.getY()));
             if (GraphicsDisplay.this.selectedMarker >= 0) {
@@ -455,7 +463,7 @@ public class GraphicsDisplay extends JPanel {
         }
 
         @Override
-        public void mouseDragged(MouseEvent ev) {
+        public void mouseDragged(MouseEvent ev) {//перетаскивание
             if (GraphicsDisplay.this.changeMode) {
                 double[] currentPoint = GraphicsDisplay.this.translatePointToXY(ev.getX(), ev.getY());
                 double newY = ((Double[]) GraphicsDisplay.this.graphicsData[GraphicsDisplay.this.selectedMarker])[1]
